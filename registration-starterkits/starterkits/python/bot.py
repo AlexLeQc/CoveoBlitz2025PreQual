@@ -7,9 +7,10 @@ class Bot:
     def __init__(self):
         print("Initializing your super mega duper bot")
         self.last_action = None
-        self.posX = None
-        self.posY = None
+        self.posX = 0
+        self.posY = 0
         self.firstaction = False
+
 
 
     def get_next_move(self, game_message: TeamGameState):
@@ -36,8 +37,9 @@ class Bot:
             occupied_positions.add((threat.position.x, threat.position.y))
 
 
-        if caracter_posX == self.posX and caracter_posY == self.posY:
-            self.next_direction(game_message)
+        # if caracter_posX == self.posX and caracter_posY == self.posY:
+        #     self.next_direction(game_message)
+        self.next_direction(game_message)
 
 
         # if tiles[caracter_posX][caracter_posY+1] == TileType.EMPTY and (caracter_posX, caracter_posY + 1) not in occupied_positions:
@@ -54,16 +56,24 @@ class Bot:
 
 
         #self.last_action = actions
-        print("Actions:")
         print("Tuiles")
         print(tiles)
         print(tiles[caracter_posX][caracter_posY])
 
+        actions = []
 
+        if self.last_action == "up":
+            actions.append(MoveUpAction())
+        elif self.last_action == "down":
+            actions.append(MoveDownAction())
+        elif self.last_action == "left":
+            actions.append(MoveLeftAction())
+        elif self.last_action == "right":
+            actions.append(MoveRightAction())
 
 
         # You can clearly do better than the random actions above! Have fun!
-        return self.last_action
+        return actions
 
 
     def next_direction(self, game_message: TeamGameState):
@@ -91,29 +101,71 @@ class Bot:
 
             # Dictionnaire pour associer les actions aux directions
         direction_actions = {
-            "up": (i_up-1, MoveUpAction),
-            "down": (i_down-1, MoveDownAction),
-            "left": (i_left-1, MoveLeftAction),
-            "right": (i_right-1, MoveRightAction)
+            "up": (i_up-1),
+            "down": (i_down-1),
+            "left": (i_left-1),
+            "right": (i_right-1)
         }
 
         # Trouver la direction avec le plus grand nombre de tuiles vides
-        best_direction = max(direction_actions, key=lambda d: direction_actions[d][0])
+        best_direction = max(direction_actions, key=lambda d: direction_actions[d])
 
+        nextposX =0
+        nextposY =0
+        next_direction = best_direction
         # Déterminer la nouvelle position à atteindre
         if best_direction == "up":
-            self.posX = x
-            self.posY = y - direction_actions[best_direction][0]  # Position y vers le haut
+            nextposX = x
+            nextposY = y - direction_actions[best_direction]  # Position y vers le haut
         elif best_direction == "down":
-            self.posX = x
-            self.posY = y + direction_actions[best_direction][0]  # Position y vers le bas
+            nextposX = x
+            nextposY = y + direction_actions[best_direction]  # Position y vers le bas
         elif best_direction == "left":
-            self.posX = x - direction_actions[best_direction][0]  # Position x vers la gauche
-            self.posY = y
+            nextposX = x - direction_actions[best_direction]  # Position x vers la gauche
+            nextposY = y
         elif best_direction == "right":
-            self.posX = x + direction_actions[best_direction][0]  # Position x vers la droite
-            self.posY = y
+            nextposX = x + direction_actions[best_direction]  # Position x vers la droite
+            nextposY = y
 
-        self.last_action = [direction_actions[best_direction][1]()]
+        print("Action en cours")
+        print(self.last_action)
+        print("Prochaine action")
+        print(next_direction)
 
+        if self.last_action is not None:
+            print("Condition None")
+            if y != self.posY or x != self.posX:
+                print("condition position")
+                if self.last_action == "up" and next_direction != "down":
+                    self.posX = nextposX
+                    self.posY = nextposY
+                    self.last_action = next_direction
 
+                if self.last_action == "down" and next_direction != "up":
+                    self.posX = nextposX
+                    self.posY = nextposY
+                    self.last_action = next_direction
+
+                if self.last_action == "left" and next_direction != "right":
+                    self.posX = nextposX
+                    self.posY = nextposY
+                    self.last_action = next_direction
+
+                if self.last_action == "right" and next_direction != "left":
+                    self.posX = nextposX
+                    self.posY = nextposY
+                    self.last_action = next_direction
+            else:
+                self.posX = nextposX
+                self.posY = nextposY
+                self.last_action = next_direction
+        else:
+            self.posX = nextposX
+            self.posY = nextposY
+            self.last_action = next_direction
+
+        test = "up"
+        print("Action choisis")
+        print(self.last_action)
+        if self.last_action == "up":
+            print("La condition devrait marcher")
