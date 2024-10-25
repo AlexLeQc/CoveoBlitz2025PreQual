@@ -9,7 +9,6 @@ class Bot:
         self.last_action = None
         self.posX = 0
         self.posY = 0
-        self.firstaction = False
 
 
 
@@ -17,10 +16,6 @@ class Bot:
         """
         Here is where the magic happens, for now the moves are not very good. I bet you can do better ;)
         """
-        if not self.firstaction:
-            self.next_direction(game_message)
-            self.firstaction = True
-
         map_width = game_message.map.width
         map_height = game_message.map.height
 
@@ -36,23 +31,9 @@ class Bot:
         for threat in game_message.threats:
             occupied_positions.add((threat.position.x, threat.position.y))
 
-
         # if caracter_posX == self.posX and caracter_posY == self.posY:
         #     self.next_direction(game_message)
         self.next_direction(game_message)
-
-
-        # if tiles[caracter_posX][caracter_posY+1] == TileType.EMPTY and (caracter_posX, caracter_posY + 1) not in occupied_positions:
-        #     actions.append(MoveDownAction())
-        # elif tiles[caracter_posX+1][caracter_posY] == TileType.EMPTY and (caracter_posX+1, caracter_posY) not in occupied_positions:
-        #     actions.append(MoveRightAction())
-        # elif tiles[caracter_posX][caracter_posY-1] == TileType.EMPTY and (caracter_posX, caracter_posY - 1) not in occupied_positions:
-        #     actions.append(MoveUpAction())
-        # elif tiles[caracter_posX-1][caracter_posY] == TileType.EMPTY and (caracter_posX-1, caracter_posY) not in occupied_positions:
-        #     actions.append(MoveLeftAction())
-        # else:
-        #     actions.append(MoveRightAction())
-
 
 
         #self.last_action = actions
@@ -70,7 +51,6 @@ class Bot:
             actions.append(MoveLeftAction())
         elif self.last_action == "right":
             actions.append(MoveRightAction())
-
 
         # You can clearly do better than the random actions above! Have fun!
         return actions
