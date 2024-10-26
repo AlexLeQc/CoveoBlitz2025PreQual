@@ -62,21 +62,34 @@ class Bot:
         x = game_message.yourCharacter.position.x
         y = game_message.yourCharacter.position.y
 
+        occupied_positions = set()
+        for threat in game_message.threats:
+            occupied_positions.add((threat.position.x, threat.position.y))
+            if threat.direction == "up":
+                occupied_positions.add((threat.position.x, threat.position.y - 1))
+            elif threat.direction == "down":
+                occupied_positions.add((threat.position.x, threat.position.y + 1))
+            elif threat.direction == "left":
+                occupied_positions.add((threat.position.x - 1, threat.position.y))
+            elif threat.direction == "right":
+                occupied_positions.add((threat.position.x + 1, threat.position.y))
+            print(threat.direction)
+
         i_up = 1
         i_down = 1
         i_left = 1
         i_right = 1
 
-        while tiles[x][y-i_up] == TileType.EMPTY:
+        while tiles[x][y-i_up] == TileType.EMPTY and (x, y - i_up) not in occupied_positions:
             i_up +=1
 
-        while tiles[x][y+i_down] == TileType.EMPTY:
+        while tiles[x][y+i_down] == TileType.EMPTY and (x, y +i_down) not in occupied_positions:
             i_down +=1
 
-        while tiles[x-i_left][y] == TileType.EMPTY:
+        while tiles[x-i_left][y] == TileType.EMPTY and (x - i_left, y) not in occupied_positions:
             i_left +=1
 
-        while tiles[x+i_right][y] == TileType.EMPTY:
+        while tiles[x+i_right][y] == TileType.EMPTY and (x + i_right, y) not in occupied_positions:
             i_right +=1
 
             # Dictionnaire pour associer les actions aux directions
@@ -116,22 +129,22 @@ class Bot:
             print("Condition None")
             if y != self.posY or x != self.posX:
                 print("condition position")
-                if self.last_action == "up" and next_direction != "down":
+                if self.last_action == "up" and (next_direction != "down" or self.posY != y - i_up-1):
                     self.posX = nextposX
                     self.posY = nextposY
                     self.last_action = next_direction
 
-                if self.last_action == "down" and next_direction != "up":
+                if self.last_action == "down" and (next_direction != "up" or self.posY != y + i_down-1):
                     self.posX = nextposX
                     self.posY = nextposY
                     self.last_action = next_direction
 
-                if self.last_action == "left" and next_direction != "right":
+                if self.last_action == "left" and (next_direction != "right" or self.posX != x - i_left-1):
                     self.posX = nextposX
                     self.posY = nextposY
                     self.last_action = next_direction
 
-                if self.last_action == "right" and next_direction != "left":
+                if self.last_action == "right" and (next_direction != "left" or self.posX != x + i_right-1):
                     self.posX = nextposX
                     self.posY = nextposY
                     self.last_action = next_direction
@@ -143,6 +156,7 @@ class Bot:
             self.posX = nextposX
             self.posY = nextposY
             self.last_action = next_direction
+
 
         test = "up"
         print("Action choisis")
